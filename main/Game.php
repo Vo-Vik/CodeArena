@@ -68,16 +68,17 @@ class Game
                     echo "Saving map\n";
                     $x = $responce['unit']['x'];
                     $y = $responce['unit']['y'];
+                    $diff = $y & 1;
                     foreach($responce['unit']['sees'] as $cell) {
 
                         $u = $cell['background'];
                         $mapcell = array('u' => $u);
                         switch ($cell['direction']) {
                             case "NW":
-                                $map[$x][$y-1] = $mapcell;
+                                $map[$x-1+$diff][$y-1] = $mapcell;
                                 break;
                             case "NE":
-                                $map[$x+1][$y-1] = $mapcell;
+                                $map[$x+$diff][$y-1] = $mapcell;
                                 break;
                             case "W":
                                 $map[$x-1][$y] = $mapcell;
@@ -86,10 +87,10 @@ class Game
                                 $map[$x+1][$y] = $mapcell;
                                 break;
                             case "SW":
-                                $map[$x][$y+1] = $mapcell;
+                                $map[$x-1+$diff][$y+1] = $mapcell;
                                 break;
                             case "SE":
-                                $map[$x+1][$y+1] = $mapcell;
+                                $map[$x+$diff][$y+1] = $mapcell;
                                 break;
                         }
                     }
@@ -110,6 +111,20 @@ class Game
         echo "Closing socket...";
         socket_close($socket);
         echo "OK.\n\n";
+        $this->ksortTree($map);
         print_r($map);
+    }
+
+    function ksortTree( &$array )
+    {
+        if (!is_array($array)) {
+            return false;
+        }
+
+        ksort($array);
+        foreach ($array as $k=>$v) {
+            $this->ksortTree($array[$k]);
+        }
+        return true;
     }
 }
