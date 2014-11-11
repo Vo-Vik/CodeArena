@@ -4,6 +4,7 @@ class Game
     public function run()
     {
         error_reporting(E_ALL);
+        $map = array();
 
         echo "<h2>TCP/IP Connection</h2>\n";
 
@@ -44,8 +45,14 @@ class Game
         if($responce['messageType'] == 'response' && $responce['status']== 'GAME_READY' ) {
             //process step
             $game_ended = FALSE;
-            while(($out = socket_read($socket, 2048, PHP_NORMAL_READ)) && !$game_ended) {
-                echo $out."\n";
+            while((!$game_ended && $out = socket_read($socket, 2048, PHP_NORMAL_READ))) {
+                if(!strlen($out)) continue;
+                echo "Response:".$out."\n";
+                if(substr($out, 0, 1) == "<") {
+                    echo "Game closed\n";
+                    $game_ended = TRUE;
+                    continue;
+                }
                 $responce = json_decode($out, TRUE);
                 if($responce['messageType'] == 'response' && $responce['status']== 'GAME_CLOSED' ) {
                     echo "Game closed\n";
@@ -58,10 +65,40 @@ class Game
                     continue;
                 }
                 if($responce['messageType'] == 'game') {
+                    echo "Saving map\n";
+                    $x = $responce['unit']['x'];
+                    $y = $responce['unit']['y'];
+                    foreach($responce['unit']['sees'] as $cell) {
+
+                        $u = $cell['background'];
+                        $mapcell = array('u' => $u);
+                        switch ($cell['direction']) {
+                            case "NW":
+                                $map[$x][$y-1] = $mapcell;
+                                break;
+                            case "NE":
+                                $map[$x+1][$y-1] = $mapcell;
+                                break;
+                            case "W":
+                                $map[$x-1][$y] = $mapcell;
+                                break;
+                            case "E":
+                                $map[$x+1][$y] = $mapcell;
+                                break;
+                            case "SW":
+                                $map[$x][$y+1] = $mapcell;
+                                break;
+                            case "SE":
+                                $map[$x+1][$y+1] = $mapcell;
+                                break;
+                        }
+                    }
+
                     echo "Processing step\n";
                     $unitId = $responce['unit']['id'];
                     $roundNum = $responce['roundNum'];
                     $in = '{"unitId":"'.$unitId.'","roundNum":"'.$roundNum.'","direction":"'.$directions[rand(0,5)].'"}';
+                    echo "Request:".$in."\n";
                     socket_write($socket, $in, strlen($in));
                 }
             }
@@ -73,5 +110,6 @@ class Game
         echo "Closing socket...";
         socket_close($socket);
         echo "OK.\n\n";
+        print_r($map);
     }
 }
