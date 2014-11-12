@@ -66,31 +66,35 @@ class Game
                 }
                 if($responce['messageType'] == 'game') {
                     echo "Saving map\n";
-                    $x = $responce['unit']['x'];
-                    $y = $responce['unit']['y'];
-                    $diff = $y & 1;
+                    $q = $responce['unit']['x'];
+                    $r = $responce['unit']['y'];
+                    //convert to cube coordinates
+                    $x = $q -($r-($r&1))/2;
+                    $z = $r;
+                    $y = -$x-$z;
                     foreach($responce['unit']['sees'] as $cell) {
 
                         $u = $cell['background'];
-                        $mapcell = array('u' => $u);
+                        $o = isset($cell['object'])?$cell['object']:'';
+                        $mapcell = array('u' => $u, 'o' => $o);
                         switch ($cell['direction']) {
                             case "NW":
-                                $map[$x-1+$diff][$y-1] = $mapcell;
+                                $map[$x][$y+1][$z-1] = $mapcell;
                                 break;
                             case "NE":
-                                $map[$x+$diff][$y-1] = $mapcell;
+                                $map[$x+1][$y][$z-1] = $mapcell;
                                 break;
                             case "W":
-                                $map[$x-1][$y] = $mapcell;
+                                $map[$x-1][$y+1][$z] = $mapcell;
                                 break;
                             case "E":
-                                $map[$x+1][$y] = $mapcell;
+                                $map[$x+1][$y-1][$z] = $mapcell;
                                 break;
                             case "SW":
-                                $map[$x-1+$diff][$y+1] = $mapcell;
+                                $map[$x-1][$y][$z+1] = $mapcell;
                                 break;
                             case "SE":
-                                $map[$x+$diff][$y+1] = $mapcell;
+                                $map[$x][$y-1][$z+1] = $mapcell;
                                 break;
                         }
                     }
@@ -112,7 +116,7 @@ class Game
         socket_close($socket);
         echo "OK.\n\n";
         $this->ksortTree($map);
-        print_r($map);
+        echo json_encode($map);
     }
 
     function ksortTree( &$array )

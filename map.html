@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>Hex Map Demo</title>
+        <!-- Stylesheet to define map boundary area and hex style -->
+        <style type="text/css">
+        body {
+            /*
+            margin: 0;
+            padding: 0;
+            */
+        }
+        .hex {
+            position: absolute;
+            width: 70;
+            height: 50;
+        }
+        </style>
+    </head>
+    <body>
+        <script>
+        var map = JSON.parse('{"-1":{"-7":{"8":{"o":"","u":"green"}},"-6":{"7":{"o":"","u":"red"}}},"0":{"-8":{"8":{"o":"","u":"green"}},"-7":{"7":{"o":"","u":"red"}},"-6":{"6":{"o":"","u":"green"}}},"1":{"-9":{"8":{"o":"","u":"green"}},"-8":{"7":{"o":"","u":"red"}},"-7":{"6":{"o":"","u":"green"}},"-6":{"5":{"o":"","u":"green"}}},"2":{"-11":{"9":{"o":"","u":"black"}},"-10":{"8":{"o":"","u":"green"}},"-9":{"7":{"o":"","u":"green"}},"-8":{"6":{"o":"","u":"green"}},"-7":{"5":{"o":"","u":"green"}},"-6":{"4":{"o":"","u":"green"}}},"3":{"-12":{"9":{"o":"","u":"black"}},"-11":{"8":{"o":"","u":"green"}},"-10":{"7":{"o":"","u":"green"}},"-9":{"6":{"o":"","u":"green"}},"-8":{"5":{"o":"","u":"green"}},"-7":{"4":{"o":"","u":"green"}},"-6":{"3":{"o":"","u":"green"}}},"4":{"-13":{"9":{"o":"","u":"black"}},"-12":{"8":{"o":"","u":"red"}},"-11":{"7":{"o":"diamond","u":"blue"}},"-10":{"6":{"o":"","u":"green"}},"-9":{"5":{"o":"","u":"red"}},"-8":{"4":{"o":"","u":"green"}},"-7":{"3":{"o":"","u":"green"}}},"5":{"-13":{"8":{"o":"","u":"black"}},"-12":{"7":{"o":"","u":"red"}},"-11":{"6":{"o":"","u":"green"}},"-10":{"5":{"o":"","u":"green"}},"-9":{"4":{"o":"","u":"green"}},"-8":{"3":{"o":"","u":"green"}}},"6":{"-13":{"7":{"o":"","u":"black"}},"-12":{"6":{"o":"","u":"black"}},"-11":{"5":{"o":"","u":"orange"}},"-10":{"4":{"o":"","u":"green"}},"-9":{"3":{"o":"","u":"green"}},"-8":{"2":{"o":"","u":"green"}}},"7":{"-12":{"5":{"o":"","u":"black"}},"-11":{"4":{"o":"","u":"black"}},"-10":{"3":{"o":"","u":"red"}},"-9":{"2":{"o":"diamond","u":"blue"}}}}');
+        for(var x in map){
+            for(var y in map[x]) {
+                for(var z in map[x][y]) {
+                    document.body.innerHTML +=
+                         '<div class="hex" style="zindex:99;left:'+(x*35-y*35+300)+'px;top:'+(z*50+50)+'px;background:'+map[x][y][z]['u']
+                            +'">'+map[x][y][z]['o']+'</div>';
+                }
+            }
+        }
+        </script>
+    </body>
+</html>
