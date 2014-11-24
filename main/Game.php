@@ -100,6 +100,7 @@ class Game
                     }
 
                     echo "Processing step\n";
+                    $maps = $this->normalizeMap($map, $x, $y, $z);
                     $unitId = $responce['unit']['id'];
                     $roundNum = $responce['roundNum'];
                     $in = '{"unitId":"'.$unitId.'","roundNum":"'.$roundNum.'","direction":"'.$directions[rand(0,5)].'"}';
@@ -130,5 +131,26 @@ class Game
             $this->ksortTree($array[$k]);
         }
         return true;
+    }
+
+    function normalizeMap($map, $x, $y, $z)
+    {
+        $maps = array();
+        foreach($map as $xkey => $xrow) {
+            foreach($xrow as $ykey=>$yrow) {
+                foreach($yrow as $zkey=>$cell) {
+                    $nx = $xkey - $x;
+                    $ny = $ykey - $y;
+                    $nz = $zkey - $x;
+                    $maps['xyz'][$nx][$ny][$nz] = $cell;
+                    $maps['yxz'][$ny][$nx][$nz] = $cell;
+                    $maps['zyx'][$nz][$ny][$nx] = $cell;
+                    $maps['xzy'][$nx][$nz][$ny] = $cell;
+                    $maps['zxy'][$nz][$nx][$ny] = $cell;
+                    $maps['yzx'][$ny][$nz][$nx] = $cell;
+                }
+            }
+        }
+        return $maps;
     }
 }
